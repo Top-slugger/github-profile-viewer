@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Github info</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <form id="submitform"><input id="username" type="text" placeholder="write name here"><button id="clicked"
+            type="submit">Search</button></form>
+    <div id="information"></div>
+    <div id="repos"></div>
+</body>
+<script>
+    const form = document.getElementById('submitform')
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const username = document.getElementById('username').value
+        const url = `https://api.github.com/users/${username}`
+        const repoUrl = `https://api.github.com/users/${username}/repos`
+        fetch(url)
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (data) {
+                displayProfile(data);
+            })
+            .catch(function (error) {
+                console.log("error:", error)
+
+            })
+
+        fetch(repoUrl)
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (repos) {
+                displayRepos(repos);
+            })
+            .catch(function (error) {
+                console.log("repo error:", error)
+            })
+    });
+
+    function displayProfile(data) {
+        document.getElementById('information').innerHTML =
+            `<img src="${data.avatar_url}" width="100">
+            <p>name: ${data.name}</p>
+            <p><b>Username:</b> ${data.login}</p>
+        <p><b>Bio:</b> ${data.bio}</p>
+        <p><b>Repos:</b> ${data.public_repos}</p>
+            <p>followers : ${data.followers}</p>
+            <p><b>Following:</b> ${data.following}</p>
+        <p><b>Location:</b> ${data.location}</p>
+        <a href="${data.html_url}" target="_blank">View Profile</a>`;
+
+    }
+
+    function displayRepos(repos) {
+    let repoContent = "<h2>Repositories</h2>";
+
+    for (let i = 0; i < 5; i++) {
+        if (repos[i]) {
+            repoContent += `
+                <p>
+                    <a href="${repos[i].html_url}" target="_blank">
+                        ${repos[i].name}
+                    </a>
+                </p>`;
+        }
+    }
+
+    document.getElementById('repos').innerHTML = repoContent;
+}
+
+</script>
+
+</html>
